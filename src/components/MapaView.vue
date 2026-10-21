@@ -41,20 +41,10 @@ onMounted(() => {
 
   capaMarcadores = L.layerGroup().addTo(mapa)
 
-  vehiculos.forEach((vehiculo) => {
-    const marcador = L.marker([vehiculo.latitud, vehiculo.longitud]).bindPopup(
-        `
-        <strong> ${vehiculo.placa}</strong><br>
-        Modelo: ${vehiculo.modelo}<br>
-        Estado: ${vehiculo.activo? 'Activo' : 'Inactivo'}
-        `
-    ).addTo(capaMarcadores)
-
-    marcadores.set(vehiculo.id, marcador)
-  })
+  sincronizarVehiculos(vehiculos)
+  ajustarMapaVehiculos()
 
   //centrarVehiculo(2)
-  ajustarMapaVehiculos()
 
 //actualizarPosicion(2, -17.9700, -67.1120)
 })
@@ -125,6 +115,35 @@ function crearMarcador(vehiculo) {
     marcadores.set(vehiculo.id, marcador)
 
     return marcador 
+}
+
+function sincronizarVehiculos(listaVehiculos) {
+  const idsRecibidos = new Set()
+  listaVehiculos.forEach((vehiculo) => {
+    idsRecibidos.add(vehiculo.id)
+
+    const marcador = marcadores.get(vehiculo.id)
+
+    if(!marcador) {
+      crearMarcador(vehiculo)
+
+      return
+    }
+
+    marcador.setLatLng([ vehiculo.latitud, vehiculo.longitud])
+
+    marcador.setPopupContent(`
+      <strong>${vehiculo.placa}</strong><br>
+      Modelo: ${vehiculo.modelo}<br>
+      Estado: ${vehiculo.activo ? 'Activo' : 'Inactivo'}
+    `)
+  })
+
+  for(const id of marcadores.keys()) {
+    if(!idsRecibidos.has(id)) {
+      eliminarMarcador(id)
+    }
+  }
 }
 onBeforeUnmount(() => {
   if (mapa) {
