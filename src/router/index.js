@@ -7,6 +7,7 @@ import LoginView from '../views/LoginView.vue'
 import MotocicletasView from '../views/MotocicletasView.vue'
 import ConductoresView from '../views/ConductoresView.vue'
 import MonitoreoView from '../views/MonitoreoView.vue'
+import DashboardView from '../views/DashboardView.vue'
 
 const routes = [
   {
@@ -40,6 +41,11 @@ const routes = [
     path: '/monitoreo',
     name: 'monitoreo',
     component: MonitoreoView
+  },
+  {
+    path: '/dashboard',
+    name: 'dashboard',
+    component: DashboardView
   }
 ]
 
